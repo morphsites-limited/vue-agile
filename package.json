@@ -19,6 +19,7 @@
     "*.js"
   ],
   "dependencies": {
+    "@babel/runtime-corejs2": "^7.12.1",
     "lodash.orderby": "^4.6.0",
     "lodash.throttle": "^4.1.1"
   },

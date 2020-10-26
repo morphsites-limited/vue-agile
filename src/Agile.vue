@@ -2,7 +2,7 @@
 	<div
 		class="agile"
 		:class="{'agile--ssr': isSSR, 'agile--auto-play': settings.autoplay, 'agile--disabled': settings.unagile, 'agile--fade': settings.fade && !settings.unagile, 'agile--rtl': settings.rtl, 'agile--no-nav-buttons': !settings.navButtons}"
-		@touchstart="() => {}"
+		@touchstart="function () {}"
 	>
 		<div
 			ref="list"
@@ -117,7 +117,7 @@
 
 		mixins: [handlers, helpers, methods, preparations, settings, throttle, watchers],
 
-		data () {
+		data: function () {
 			return {
 				autoplayInterval: null,
 				autoplayRemaining: null,
@@ -142,7 +142,7 @@
 
 		computed: {
 			breakpoints: function () {
-				return (!this.initialSettings.responsive) ? [] : this.initialSettings.responsive.map(item => item.breakpoint)
+				return (!this.initialSettings.responsive) ? [] : this.initialSettings.responsive.map(function (item) { return item.breakpoint })
 			},
 
 			canGoToPrev: function () {
@@ -162,8 +162,8 @@
 			},
 
 			currentBreakpoint: function () {
-				let breakpoints = this.breakpoints.map(item => item).reverse()
-				return (this.initialSettings.mobileFirst) ? breakpoints.find(item => item < this.widthWindow) || 0 : breakpoints.find(item => item > this.widthWindow) || null
+				let breakpoints = this.breakpoints.map(function (item) { return item; }).reverse()
+				return (this.initialSettings.mobileFirst) ? breakpoints.find(function (item) { return item < this.widthWindow; }) || 0 : breakpoints.find(function (item) { return item > this.widthWindow; }) || null
 			},
 
 			marginX: function () {
@@ -186,7 +186,7 @@
 			},
 
 			slidesAll: function () {
-				return (this.slidesCloned) ? [...this.slidesClonedBefore, ...this.slides, ...this.slidesClonedAfter] : this.slides
+				return (this.slidesCloned) ? this.slidesClonedBefore.concat(this.slides).concat(this.slidesClonedAfter) : this.slides
 			},
 
 			widthSlide: function () {
@@ -194,7 +194,7 @@
 			}
 		},
 
-		mounted () {
+		mounted: function () {
 			// Windows resize listener
 			window.addEventListener('resize', this.getWidth)
 
@@ -211,7 +211,7 @@
 			this.reload()
 		},
 
-		beforeDestroy () {
+		beforeDestroy: function () {
 			window.removeEventListener('resize', this.getWidth)
 
 			this.$refs.track.removeEventListener('touchstart', this.handleMouseDown)
@@ -226,34 +226,37 @@
 
 		methods: {
 			// Return current breakpoint
-			getCurrentBreakpoint () {
+			getCurrentBreakpoint: function () {
 				return this.currentBreakpoint
 			},
 
 			// Return settings for current breakpoint
-			getCurrentSettings () {
+			getCurrentSettings: function () {
 				return this.settings
 			},
 
 			// Return current slide index
-			getCurrentSlide () {
+			getCurrentSlide: function () {
 				return this.currentSlide
 			},
 
 			// Return initial settings
-			getInitialSettings () {
+			getInitialSettings: function () {
 				return this.initialSettings
 			},
 
 			// Go to slide
-			goTo (n, transition = true, asNav = false) {
+			goTo: function (n, transition, asNav) {
+				if (transition === undefined) { transition = true; }
+				if (asNav === undefined) { transition = false; }
+
 				// Break goTo() if unagile is active
 				if (this.settings.unagile) {
 					return false
 				}
 
 				if (!asNav) {
-					this.settings.asNavFor.forEach(carousel => {
+					this.settings.asNavFor.forEach(function (carousel) {
 						if (carousel) {
 							carousel.goTo(n, transition, true)
 						}
@@ -274,7 +277,7 @@
 					this.currentSlide = slideNextReal
 
 					if (n !== slideNextReal) {
-						setTimeout(() => {
+						setTimeout(function () {
 							this.goTo(slideNextReal, false)
 						}, this.settings.speed)
 					}
@@ -289,21 +292,21 @@
 			},
 
 			// Go to next slide
-			goToNext () {
+			goToNext: function () {
 				if (this.canGoToNext) {
 					this.goTo(this.currentSlide + 1)
 				}
 			},
 
 			// Go to previous slide
-			goToPrev () {
+			goToPrev: function () {
 				if (this.canGoToPrev) {
 					this.goTo(this.currentSlide - 1)
 				}
 			},
 
 			// Reload carousel
-			reload () {
+			reload: function () {
 				this.getWidth()
 				this.prepareSlides()
 				this.prepareCarousel()
@@ -312,7 +315,7 @@
 
 				const widthContainer = this.widthContainer;
 				this.widthContainer = 0;
-				this.$nextTick(() => {
+				this.$nextTick(function () {
 					this.widthContainer = widthContainer;
 				})
 			}
